@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online-shop</title>
+
+  <link rel="stylesheet" href="/src/style.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+
+  <header class="px-section py-header w-full sticky border-b-1 border-light-gray bg-white flex items-center justify-between">
+    <div class="w-full hidden md-block">
+      <a href="#" class="font-700 text-blue text-1-1rem">
+        <i class="fa-solid fa-bag-shopping text-1-1rem"></i>
+        Online-Shop
+      </a>
+    </div>
+
+    <nav class="flex flex-col gap-1rem w-full md-flex-row-reverse">
+      <div class="flex justify-between items-center">
+        <a href="#" class="font-700 text-blue text-1-1rem md-hidden">
+          <i class="fa-solid fa-bag-shopping font-900"></i>
+          Online-Shop
+        </a>
+
+        <div class="flex items-center gap-0-5rem">
+          <button type="button" id="open-favorite-btn"
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent flex items-center justify-center transition-all-03s-ease">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+
+          <button type="button" id="open-cart-btn"
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent flex items-center justify-center transition-all-03s-ease">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center border-1 border-light-gray rounded-8px bg-light-gray-2 transition-all-03s-ease">
+        <button type="button" class="border-none bg-transparent">
+          <i class="fa-solid fa-magnifying-glass text-gray font-900"></i>
+        </button>
+        <input type="search" name="search" id="search-input" placeholder="Search products..."
+          class="w-full border-none bg-transparent placeholder-text-dark-gray text-1rem py-0-5rem px-0-5rem rounded-8px transition-all-03s-ease">
+      </div>
+    </nav>
+
+  </header>
+
+  <main class="px-section py-section bg-light-gray-2 min-h-screen flex flex-col gap-1-5rem">
+    <section class="flex flex-col justify-between gap-1rem md-flex-row md-items-center">
+      <h1 class="text-1-5rem">Products</h1>
+
+      <div class="flex gap-0-5rem flex-wrap">
+        <div class="py-0-5rem">
+          <input type="radio" name="category" id="all" class="hidden" checked>
+          <label for="all"
+            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">All</label>
+        </div>
+
+        <div class="py-0-5rem">
+          <input type="radio" name="category" id="electronics" class="hidden">
+          <label for="electronics"
+            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Electronics</label>
+        </div>
+
+        <div class="py-0-5rem">
+          <input type="radio" name="category" id="accessories" class="hidden">
+          <label for="accessories"
+            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Accessories</label>
+        </div>
+
+        <div class="py-0-5rem">
+          <input type="radio" name="category" id="clothing" class="hidden">
+          <label for="clothing"
+            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Clothing</label>
+        </div>
+
+        <div class="py-0-5rem">
+          <input type="radio" name="category" id="home" class="hidden">
+          <label for="home"
+            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Home</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards appear inside this section -->
+    <section id="cards-container" class="
+    grid grid-cols-2 md-grid-cols-3 lg-grid-cols-4 gap-1rem
+    ">
+      
+
+      
+    </section>
+  </main>
+
+  <div id="modal" class="fixed bg-black-05 inset-0">
+
+    <aside id="favorite-aside" class="bg-white absolute flex flex-col gap-1rem ">
+
+      <div class="flex items-center justify-between py-1rem px-1rem border-b-1 border-light-gray">
+        <h3 class="text-1-1rem">Favorites</h3>
+        <button type="button" class="border-none bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="favorite-container">
+        <div class="border-1 border-light-gray rounded-8px px-1rem py-0-5rem">
+
+        </div>
+      </div>
+
+    </aside>
+
+    <aside id="cart-aside"></aside>
+
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
