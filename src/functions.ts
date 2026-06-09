@@ -7,7 +7,7 @@ export function createCard(data : Card, category? : string) {
     const card = document.createElement("article");
     card.classList.add('card', 'rounded-8px', 'overflow-hidden', 'border-1', 'border-light-gray', 'bg-white', 'max-w-300px', 'transition-all-03s-ease')
     card.innerHTML = `
-        <div class="relative border-b-1 border-light-gray">
+        <div class="relative border-b-1 border-light-red">
           <img src="${data.images[0]}" alt="${data.title}" loading="lazy" class="object-cover w-full pointer-events-none transition-all-03s-ease">
           <input type="checkbox" name="" id="favorite-checkbox-${data.id}" class="favorite-checkbox hidden">
           <div id="favorite-btn" class="absolute btn-34 rounded-8px bg-light-red border-1 border-light-gray flex items-center justify-center">
