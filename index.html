@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/public/assets/icons/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online-shop</title>
 
@@ -34,13 +34,15 @@
 
         <div class="flex items-center gap-0-5rem">
           <button type="button" id="open-favorite-btn"
-            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent flex items-center justify-center transition-all-03s-ease">
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease">
             <i class="fa-regular fa-heart"></i>
+            <span class="counter-favorites absolute text-0-7rem flex items-center justify-center bg-blue text-white rounded-50p transition-all-03s-ease translate-y-0-5rem opacity-0"></span>
           </button>
 
           <button type="button" id="open-cart-btn"
-            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent flex items-center justify-center transition-all-03s-ease">
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease">
             <i class="fa-solid fa-cart-shopping"></i>
+            <span class="counter-carts absolute text-0-7rem flex items-center justify-center bg-blue text-white rounded-50p transition-all-03s-ease translate-y-0-5rem opacity-0"></span>
           </button>
         </div>
       </div>
@@ -103,38 +105,39 @@
     </section>
   </main>
 
-  <div id="modal" class="fixed bg-black-05 inset-0">
-
-    <aside id="favorite-aside" class="bg-white absolute flex flex-col gap-1rem ">
-
+  <div id="modal" class="fixed bg-black-05 inset-0 transition-all-03s-ease opacity-0 pointer-events-none">
+    <aside id="aside" class="bg-white absolute flex flex-col justify-between gap-0-5rem transition-all-03s-linear translate-x-full">
       <div class="flex items-center justify-between py-1rem px-1rem border-b-1 border-light-gray">
-        <h3 class="text-1-1rem">Favorites</h3>
-        <button type="button" class="border-none bg-transparent cursor-pointer">
+        <h3 class="text-1-1rem" id="modal-title"></h3>
+        <button id="close-modal-btn" type="button" class="border-1 border-light-gray rounded-8px btn-34 bg-transparent cursor-pointer transition-all-03s-ease">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <div id="favorite-container" class="px-0-5rem">
-        <div class="border-1 border-light-gray rounded-8px px-1rem py-0-5rem flex justify-between">
-          <div class="flex items-center gap-0-5rem md-gap-1rem">
-            <img src="https://picsum.photos/1000" alt="" loading="lazy" class="rounded-8px pointer-events-none btn-42">
-            <div class="md-flex md-flex-col">
-              <h5 class="leading-tight">Wireless Headphones Pro</h5>
-              <p class="text-gray text-0-7rem">Electronics</p>
-              <p class="text-blue text-0-7rem font-700">$129.99  </p>
-            </div>
-          </div>
+      <div id="favorite-container" class="px-0-5rem py-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
 
-          <div class="border-1 border-light-gray bg-light-red btn-34 flex items-center justify-center rounded-8px">
-            <i class="fa-solid fa-heart text-red"></i>
-          </div>
-        </div>
+      <div id="cart-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
+
+      <div id="checkout-bar" class="border-t-1 border-light-gray flex flex-col gap-1rem py-1rem px-1rem">
+        <p class="flex items-center justify-between">
+          <span class="text-0-9rem">Total: </span>
+          <span id="total-price" class="text-blue font-700 text-1-1rem">$0.00</span>
+        </p>
+        <button type="button" class="bg-blue text-white border-none rounded-8px w-full py-0-5rem flex items-center justify-center gap-0-5rem">
+          <i class="fa-solid fa-credit-card"></i>
+          <span class="font-500">Checkout</span>
+        </button>
       </div>
 
     </aside>
+  </div>
 
-    <aside id="cart-aside"></aside>
+  <div id="loader" class="fixed inset-0 flex items-center justify-center gap-0-5rem pointer-events-none opacity-0">
+    <div class="traingle-1 bg-blue rounded-8px"></div>
 
+    <div class="traingle-2 bg-blue rounded-8px"></div>
+
+    <div class="traingle-3 bg-blue rounded-8px"></div>
   </div>
 
   <script type="module" src="/src/main.ts"></script>
