@@ -6,4 +6,17 @@ export interface Card {
     brand: string;
     category: string;
     images: string[];
+    thumbnail: string;
+}
+
+export interface FavoriteCard {
+    id: number;
+    title: string;
+    category: string;
+    price: number;
+    thumbnail: string;
+}
+
+export interface CartItem extends FavoriteCard {
+    quantity: number;
 }
