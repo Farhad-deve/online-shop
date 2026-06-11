@@ -50,18 +50,7 @@ export function createCard(data: Card, category?: string) {
             </button>
           </div>
         </div>
-    `
-
-  // const favoriteCheckbox = card.querySelector('.favorite-checkbox') as HTMLInputElement;
-  // const favoriteBtn = card.querySelector('#favorite-btn') as HTMLElement;
-
-  // favoriteCheckbox.addEventListener('change', () => {
-  //   if (favoriteCheckbox.checked) {
-  //     pushToFavoriteList(data);
-  //   } else {
-  //     favoriteCards = favoriteCards.filter(fCard => fCard.id !== data.id);
-  //   }
-  // });
+  `
 
   CardsContainer.appendChild(card);
 }
