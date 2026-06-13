@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online-shop</title>
 
-  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/css/style.css">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -27,22 +27,33 @@
 
     <nav class="flex flex-col gap-1rem w-full md-flex-row-reverse">
       <div class="flex justify-between items-center">
-        <a href="#" class="font-700 text-blue text-1-1rem md-hidden">
+        <a href="#" class="font-700 text-blue md-hidden">
           <i class="fa-solid fa-bag-shopping font-900"></i>
           Online-Shop
         </a>
 
         <div class="flex items-center gap-0-5rem">
+          <button type="button" id="open-add-product-btn"
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent flex items-center justify-center transition-all-03s-ease hover-bg-blue-text-white">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+
           <button type="button" id="open-favorite-btn"
-            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease">
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease hover-bg-blue-text-white">
             <i class="fa-regular fa-heart"></i>
             <span class="counter-favorites absolute text-0-7rem flex items-center justify-center bg-blue text-white rounded-50p transition-all-03s-ease translate-y-0-5rem opacity-0"></span>
           </button>
 
           <button type="button" id="open-cart-btn"
-            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease">
+            class="btn-34 rounded-8px border-1 border-light-gray bg-transparent relative flex items-center justify-center transition-all-03s-ease hover-bg-blue-text-white">
             <i class="fa-solid fa-cart-shopping"></i>
             <span class="counter-carts absolute text-0-7rem flex items-center justify-center bg-blue text-white rounded-50p transition-all-03s-ease translate-y-0-5rem opacity-0"></span>
+          </button>
+
+          <button type="button" id="open-auth-container-btn"
+            class="px-0-5rem py-0-5rem rounded-8px border-1 border-light-gray bg-transparent font-600 text-0-8rem flex items-center justify-center gap-0-5rem transition-all-03s-ease hover-bg-blue-text-white">
+            <i class="fa-regular fa-user"></i>
+            Login
           </button>
         </div>
       </div>
@@ -52,43 +63,42 @@
           <i class="fa-solid fa-magnifying-glass text-gray font-900"></i>
         </button>
         <input type="search" name="search" id="search-input" placeholder="Search products..."
-          class="w-full border-none bg-transparent placeholder-text-dark-gray text-1rem py-0-5rem px-0-5rem rounded-8px transition-all-03s-ease">
+          class="w-full border-none bg-transparent placeholder-text-dark-gray text-1rem py-0-5rem px-0-5rem rounded-8px transition-all-03s-ease focus-shadow-blue">
       </div>
     </nav>
-
   </header>
 
-  <main class="px-section py-section bg-light-gray-2 min-h-screen flex flex-col gap-1-5rem">
+  <main class="px-section py-section bg-light-gray-2 min-h-screen flex flex-col gap-1-5rem border-b-1 border-light-gray">
     <section class="flex flex-col justify-between gap-1rem md-flex-row md-items-center">
       <h1 class="text-1-5rem">Products</h1>
 
       <div class="flex gap-0-5rem flex-wrap">
         <div class="py-0-5rem">
-          <input type="radio" name="category" id="all" class="hidden" checked>
+          <input type="radio" name="category" id="all" data-category="all" class="hidden" checked>
           <label for="all"
             class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">All</label>
         </div>
 
         <div class="py-0-5rem">
-          <input type="radio" name="category" id="electronics" class="hidden">
+          <input type="radio" name="category" id="electronics" data-category="electronics" class="hidden">
           <label for="electronics"
             class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Electronics</label>
         </div>
 
         <div class="py-0-5rem">
-          <input type="radio" name="category" id="accessories" class="hidden">
+          <input type="radio" name="category" id="accessories" data-category="accessories" class="hidden">
           <label for="accessories"
             class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Accessories</label>
         </div>
 
         <div class="py-0-5rem">
-          <input type="radio" name="category" id="clothing" class="hidden">
+          <input type="radio" name="category" id="clothing" data-category="clothing" class="hidden">
           <label for="clothing"
             class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Clothing</label>
         </div>
 
         <div class="py-0-5rem">
-          <input type="radio" name="category" id="home" class="hidden">
+          <input type="radio" name="category" id="home" data-category="home" class="hidden">
           <label for="home"
             class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Home</label>
         </div>
@@ -105,6 +115,10 @@
     </section>
   </main>
 
+  <footer class="px-section py-header flex items-center justify-center">
+    <p class="text-gray text-0-8rem">&copy; 2026 Online-Shop. All rights reserved</p>
+  </footer>
+
   <div id="modal" class="fixed bg-black-05 inset-0 transition-all-03s-ease opacity-0 pointer-events-none">
     <aside id="aside" class="bg-white absolute flex flex-col justify-between gap-0-5rem transition-all-03s-linear translate-x-full">
       <div class="flex items-center justify-between py-1rem px-1rem border-b-1 border-light-gray">
@@ -114,22 +128,146 @@
         </button>
       </div>
 
+      <!-- Favorites -->
       <div id="favorite-container" class="px-0-5rem py-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
 
+      <!-- Cart -->
       <div id="cart-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
+
+      <!-- My products -->
+      <div id="my-products-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden">
+
+      </div>
 
       <div id="checkout-bar" class="border-t-1 border-light-gray flex flex-col gap-1rem py-1rem px-1rem">
         <p class="flex items-center justify-between">
           <span class="text-0-9rem">Total: </span>
           <span id="total-price" class="text-blue font-700 text-1-1rem">$0.00</span>
         </p>
-        <button type="button" class="bg-blue text-white border-none rounded-8px w-full py-0-5rem flex items-center justify-center gap-0-5rem">
+        <button type="button" class="bg-blue text-white border-none rounded-8px w-full py-0-5rem flex border-1 border-blue items-center justify-center gap-0-5rem transition-all-03s-ease hover-bg-white-text-blue">
           <i class="fa-solid fa-credit-card"></i>
           <span class="font-500">Checkout</span>
         </button>
       </div>
 
     </aside>
+
+    <div id="auth-container" class="bg-white rounded-8px absolute top-50p left-50p translate-center flex flex-col transition-all-03s-ease hidden">
+      <div class="flex items-center justify-between border-b-1 border-light-gray py-1rem px-1rem">
+        <h3 id="auth-title" class="text-1-1rem">Welcome Back</h3>
+        <button id="close-modal-btn" type="button" class="border-1 border-light-gray rounded-8px btn-34 bg-transparent cursor-pointer transition-all-03s-ease">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="px-1rem py-1rem flex flex-col gap-1rem">
+        <div id="auth-mode-switch" class="flex justify-between items-center gap-0-5rem text-center px-0-5rem py-0-3rem bg-light-gray-2 rounded-8px">
+          <input type="radio" name="auth-mode" id="login" data-mode="login" class="hidden" checked>
+          <label for="login" class="w-full py-0-5rem cursor-pointer rounded-8px font-600 transition-all-03s-ease text-gray">
+            Login
+          </label>
+
+          <input type="radio" name="auth-mode" id="register" data-mode="register" class="hidden">
+          <label for="register" class="w-full py-0-5rem cursor-pointer rounded-8px font-600 transition-all-03s-ease text-gray">
+            Register
+          </label>
+        </div>
+
+        <div id="auth-form-container">
+          <form id="auth-form" class="flex flex-col gap-1rem">
+            <div class="flex flex-col gap-0-5rem hidden" id="form-name-container">
+              <label for="nameInput" class="text-0-8rem font-600">Name</label>
+              <input type="text" name="name" id="nameInput" placeholder="Your name"
+                class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+              >
+            </div>
+
+            <div class="flex flex-col gap-0-5rem">
+              <label for="emailInput" class="text-0-8rem font-600">Email</label>
+              <input type="email" name="email" id="emailInput" placeholder="you@example.com"
+                class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+              >
+            </div>
+
+            <div class="flex flex-col gap-0-5rem">
+              <label for="passwordInput" class="text-0-8rem font-600">Password</label>
+              <input type="password" name="password" id="passwordInput" placeholder="••••••"
+                class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+              >
+            </div>
+
+            <div class="flex flex-col gap-1rem">
+              <button type="submit" id="auth-btn" class="bg-blue border-1 border-blue text-white rounded-8px py-0-5rem px-0-5rem text-0-8rem transition-all-03s-ease hover-bg-white-text-blue">Login</button>
+              <p class="text-0-8rem text-center">
+                <span id="auth-hint-text" class="text-gray">No account?</span>
+                <span>
+                  <a id="auth-link" href="#" class="font-600 px-0-3rem text-blue transition-all-03s-ease hover-bg-blue-text-white">Register</a>
+                </span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="add-product-container" class="bg-white rounded-8px absolute top-50p left-50p translate-center flex flex-col transition-all-03s-ease hidden">
+      <div class="flex items-center justify-between border-b-1 border-light-gray py-1rem px-1rem">
+        <h3 id="auth-title" class="text-1-1rem">Sell a product</h3>
+        <button id="close-modal-btn" type="button" class="border-1 border-light-gray rounded-8px btn-34 bg-transparent cursor-pointer transition-all-03s-ease">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="px-1rem py-1rem flex flex-col gap-1rem">
+        <form id="add-product-form" class="flex flex-col gap-1rem">
+          <div class="flex flex-col gap-0-5rem">
+            <label for="TitleInput" class="text-0-8rem font-600">Title</label>
+            <input type="text" name="title" id="TitleInput" placeholder="Enter product name"
+              class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+            >
+          </div>
+
+          <div class="flex flex-col md-flex-row gap-0-5rem">
+            <div class="flex flex-col gap-0-5rem w-full">
+              <label for="categoryInput" class="text-0-8rem font-600">Category</label>
+              <input type="text" name="category" id="categoryInput" placeholder="Enter category name"
+                class="border-1 border-light-gray rounded-8px w-full py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+              >
+            </div>
+
+            <div class="flex flex-col gap-0-5rem w-full">
+              <label for="priceInput" class="text-0-8rem font-600">Price ($)</label>
+              <input type="text" name="price" id="priceInput" placeholder="0.00"
+                class="border-1 border-light-gray rounded-8px w-full py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
+              >
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-0-5rem">
+            <label for="descriptionTextArea" class="text-0-8rem font-600">Description</label>
+            <textarea name="description" id="descriptionTextArea" placeholder="Optional" rows="5"
+              class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue resize-none"
+            ></textarea>
+          </div>
+
+          <div>
+            <fieldset class="border-none m-0 p-0">
+              <legend class="text-0-8rem font-600">Image</legend>
+              <label for="imageInput" class="flex flex-col items-center gap-0-5rem font-600 text-0-8rem border-1-dashed border-light-gray rounded-8px py-1rem px-1rem cursor-pointer">
+                <i class="fa-solid fa-cloud-arrow-up text-blue text-0-9rem"></i>
+                Click to upload an image
+              </label>
+              <input type="file" name="image" id="imageInput" class="hidden">
+            </fieldset>
+          </div>
+
+          <div class="flex flex-col text-center gap-0-5rem">
+            <button type="submit" class="bg-blue border-1 border-blue text-white rounded-8px py-0-5rem px-0-5rem text-0-8rem transition-all-03s-ease hover-bg-white-text-blue">Submit for review</button>
+            <p class="text-gray text-0-8rem">An admin will review it before it goes live.</p>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <div id="loader" class="fixed inset-0 flex items-center justify-center gap-0-5rem pointer-events-none opacity-0">
