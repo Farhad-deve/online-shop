@@ -18,7 +18,7 @@ export function pushToFavoriteList(product: FavoriteCard) {
 
 }
 
-export function removeFromFavoriteList(id: number) {
+export function removeFromFavoriteList(id: string) {
     favoriteCards = favoriteCards.filter(fCard => fCard.id !== id);
 
     counterFavorites.textContent = String(favoriteCards.length);
@@ -35,7 +35,7 @@ export function createFavoriteCard(data: FavoriteCard) {
     fCard.classList.add('border-1', 'border-light-gray', 'rounded-8px', 'px-1rem', 'py-0-5rem', 'flex', 'justify-between');
     fCard.innerHTML = `
     <div class="flex items-center gap-0-5rem md-gap-1rem">
-      <img src="${data.thumbnail}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
+      <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
       <div class="md-flex md-flex-col flex flex-col justify-between">
         <h4 class="leading-tight text-0-8rem">${data.title}</h4>
         <p class="text-gray text-0-7rem capitalize">${data.category}</p>
@@ -64,7 +64,7 @@ CardsContainer.addEventListener('change', (e) => {
 
     if (!target.classList.contains('favorite-checkbox')) return;
 
-    const id = Number(target.dataset.id);
+    const id = target.dataset.id as string;
 
     const product = products.find(p => p.id === id);
 

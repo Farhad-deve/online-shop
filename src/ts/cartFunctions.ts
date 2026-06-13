@@ -49,7 +49,7 @@ export function addToCart(product: Card) {
             title: product.title,
             category: product.category,
             price: product.price,
-            thumbnail: product.thumbnail,
+            thumbnail: product.imageUrl,
             quantity: 1
         })
         counterCarts.textContent = String(cartItems.length);
@@ -60,7 +60,7 @@ export function addToCart(product: Card) {
     renderCartItems();
 }
 
-export function removeCartItem(id: number) {
+export function removeCartItem(id: string) {
     cartItems = cartItems.filter(item => item.id !== id);
 
     if (cartItems.length === 0) {
@@ -72,7 +72,7 @@ export function removeCartItem(id: number) {
     renderCartItems();
 }
 
-export function increaseQuantity(id: number) {
+export function increaseQuantity(id: string) {
     const item = cartItems.find(item => item.id === id);
 
     if (!item) return;
@@ -82,7 +82,7 @@ export function increaseQuantity(id: number) {
     renderCartItems();
 }
 
-export function decreaseQuantity(id: number) {
+export function decreaseQuantity(id: string) {
     const item = cartItems.find(item => item.id === id);
 
     if (!item) return;
@@ -117,12 +117,12 @@ CartContainer.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
 
     const action = target.dataset.action;
-    const id = Number(target.dataset.id);
+    const id = target.dataset.id as string;
 
     if (!action) return;
 
     if (action === "increase") {
-        increaseQuantity(id)
+        increaseQuantity(id);
     }
 
     if (action === "decrease") {
