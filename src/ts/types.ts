@@ -42,3 +42,16 @@ export interface RegUser {
     email: string;
     password: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean
+  data: T
+  meta: Meta
+}
+
+export interface Meta {
+  page: number
+  limit: number
+  total: number
+  pages: number
+}

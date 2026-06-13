@@ -1,6 +1,6 @@
 import { api } from "../api/api";
 import { renderFavoriteCards } from "./favoriteFunctions";
-import { type Card } from "./types";
+import { type ApiResponse, type Card } from "./types";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
@@ -170,8 +170,7 @@ export function closeModal() {
 export async function getAllData() {
   try {
     loading(true);
-    const response = await api("/products");
-
+    const response = await api<ApiResponse<Card[]>>("/products");
     if (!response) return;
 
     products = response.data.data;
