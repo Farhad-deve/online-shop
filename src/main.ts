@@ -80,9 +80,9 @@ Form.addEventListener('submit', (e : SubmitEvent) => {
     const data = Object.fromEntries(formData.entries());
 
     console.log(data);
+    
 })
 
 getAllData();
-
 
 

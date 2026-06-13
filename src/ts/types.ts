@@ -37,8 +37,11 @@ export interface CartItem extends FavoriteCard {
     quantity: number;
 }
 
-export interface RegUser {
-    name: string;
+export interface LogUser {
     email: string;
     password: string;
+}
+
+export interface RegUser extends LogUser {
+    name: string;
 }

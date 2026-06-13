@@ -12,7 +12,7 @@ export function createCartItem(data: CartItem) {
     const totalPrice = (data.price * data.quantity).toFixed(2);
     cItem.innerHTML = `
     <div class="flex items-center gap-0-5rem md-gap-1rem">
-      <img src="${data.thumbnail}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
+      <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
       <div class="md-flex md-flex-col flex flex-col justify-between">
         <h4 class="leading-tight text-0-8rem">${data.title}</h4>
         <p class="text-gray text-0-7rem capitalize">${data.category}</p>
@@ -49,7 +49,7 @@ export function addToCart(product: Card) {
             title: product.title,
             category: product.category,
             price: product.price,
-            thumbnail: product.imageUrl,
+            imageUrl: product.imageUrl,
             quantity: 1
         })
         counterCarts.textContent = String(cartItems.length);

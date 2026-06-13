@@ -1,11 +1,13 @@
 import { api } from "../api/api";
 import { renderFavoriteCards } from "./favoriteFunctions";
+import { getCategories } from "./requests";
 import { type Card } from "./types";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
 export const AuthContainer = document.querySelector("#auth-container") as HTMLElement;
 export const AddProductContainer = document.getElementById("add-product-container") as HTMLElement;
+export const CategoriesContainer = document.querySelector("#categories-container") as HTMLElement;
 
 export const modal = document.querySelector('#modal') as HTMLDivElement;
 const modalTitle = document.querySelector('#modal-title') as HTMLHeadElement;
@@ -74,6 +76,21 @@ export function createCard(data: Card) {
 
   CardsContainer.appendChild(card);
 }
+
+export function createCategoryCard(data : string[]) {
+  const category = document.createElement("div");
+  category.classList.add('py-0-5rem');
+  category.innerHTML = `
+    <input type="radio" name="category" id="${data[0]}" data-category="${data[0]}" class="hidden">
+    <label for="${data[0]}"
+      class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">${data[0]}</label>
+  `
+
+  CategoriesContainer.appendChild(category);
+}
+
+
+
 
 export function applyFilters() {
   let filteredProducts = products;
@@ -174,6 +191,7 @@ export async function getAllData() {
 
     if (!response) return;
 
+    console.log(response)
     products = response.data.data;
     console.log(products)
 
