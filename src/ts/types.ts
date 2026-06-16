@@ -45,3 +45,27 @@ export interface LogUser {
 export interface RegUser extends LogUser {
     name: string;
 }
+
+export interface User {
+    name: string;
+    role: string;
+    email: string;
+    id: string;
+    cart: CartItem[];
+    favorites: FavoriteCard[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean
+  data: T
+  meta: Meta
+}
+
+export interface Meta {
+  page: number
+  limit: number
+  total: number
+  pages: number
+}

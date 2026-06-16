@@ -1,7 +1,7 @@
 import { api } from "../api/api";
 import { renderFavoriteCards } from "./favoriteFunctions";
-import { getCategories } from "./requests";
-import { type Card } from "./types";
+
+import { type ApiResponse, type Card, type User } from "./types";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
@@ -19,11 +19,19 @@ export const openFavoriteBtn = document.querySelector('#open-favorite-btn') as H
 export const openCartBtn = document.querySelector('#open-cart-btn') as HTMLButtonElement;
 export const openAuthContainerBtn = document.querySelector('#open-auth-container-btn') as HTMLButtonElement;
 export const openAddProductBtn = document.querySelector('#open-add-product-btn') as HTMLButtonElement;
+
+export const profileBtn = document.querySelector('#profile-btn') as HTMLDivElement;
+export const profileName = document.querySelector('#profile-name') as HTMLSpanElement;
+export const profileLetter = document.querySelector('#profile-letter') as HTMLSpanElement;
+
 export const SearchInput = document.querySelector('#search-input') as HTMLInputElement;
+export const nameInput = document.querySelector('#nameInput') as HTMLInputElement;
+export const emailInput = document.querySelector('#emailInput') as HTMLInputElement;
+export const passwordInput = document.querySelector('#passwordInput') as HTMLInputElement;
 
 export const closeModalBtn = document.querySelectorAll('#close-modal-btn') as NodeListOf<HTMLButtonElement>;
-export const categoryInputs = document.querySelectorAll('input[name="category"]') as NodeListOf<HTMLInputElement>;
 export const authModeInputs = document.querySelectorAll('input[name="auth-mode"]') as NodeListOf<HTMLInputElement>;
+export const authModeSwitch = document.querySelector('#auth-mode-switch') as HTMLDivElement;
 
 const checkoutBar = document.querySelector('#checkout-bar') as HTMLDivElement;
 
@@ -43,6 +51,7 @@ export const filters = {
   category: "all",
   search: ""
 }
+
 
 export function createCard(data: Card) {
   const card = document.createElement("article");
@@ -77,19 +86,39 @@ export function createCard(data: Card) {
   CardsContainer.appendChild(card);
 }
 
-export function createCategoryCard(data : string[]) {
+export function createCategoryCard(data: string) {
   const category = document.createElement("div");
   category.classList.add('py-0-5rem');
+  const id = data.toLowerCase()
+
   category.innerHTML = `
-    <input type="radio" name="category" id="${data[0]}" data-category="${data[0]}" class="hidden">
-    <label for="${data[0]}"
-      class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">${data[0]}</label>
+    <input type="radio" name="category" id="${id}" data-category="${id}" class="hidden" ${id === "all" ? "checked" : ""}>
+    <label for="${id}"
+      class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer capitalize transition-all-03s-ease">${data}</label>
   `
 
   CategoriesContainer.appendChild(category);
 }
 
+export function renderAllcategories(categories: string[]) {
+  CategoriesContainer.innerHTML = '';
 
+  createCategoryCard("all");
+
+  categories.forEach((category) => {
+    createCategoryCard(category);
+  })
+
+  const categoryInputs = document.querySelectorAll('input[name="category"]') as NodeListOf<HTMLInputElement>;
+
+  categoryInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      filters.category = input.dataset.category ?? "all";
+
+      applyFilters();
+    });
+  });
+}
 
 
 export function applyFilters() {
@@ -97,7 +126,7 @@ export function applyFilters() {
 
   if (filters.category !== "all") {
     filteredProducts = filteredProducts.filter(
-      product => 
+      product =>
         product.category.toLowerCase() === filters.category.toLowerCase()
     );
   }
@@ -106,7 +135,7 @@ export function applyFilters() {
     const query = filters.search.toLowerCase();
 
     filteredProducts = filteredProducts.filter(
-      product => 
+      product =>
         product.title.toLowerCase().includes(query) ||
         product.category.toLowerCase().includes(query) ||
         product.description.toLowerCase().includes(query)
@@ -184,16 +213,28 @@ export function closeModal() {
   Aside.classList.replace('translate-x-0', 'translate-x-full');
 }
 
+export function updateNavUI(user : User | null) {
+  if (!user) {
+    openAuthContainerBtn.classList.remove('hidden');
+    profileBtn.classList.add('hidden');
+    return;
+  }
+
+  openAuthContainerBtn.classList.add('hidden');
+
+  profileName.textContent = user.name;
+  profileLetter.textContent = user.name.charAt(0).toUpperCase();
+  
+  profileBtn.classList.remove('hidden');
+}
+
 export async function getAllData() {
   try {
     loading(true);
-    const response = await api("/products");
-
+    const response = await api<ApiResponse<Card[]>>("/products");
     if (!response) return;
 
-    console.log(response)
     products = response.data.data;
-    console.log(products)
 
     loading(false);
     renderAllCard(products);
