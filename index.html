@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/public/assets/icons/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online-shop</title>
 
@@ -55,6 +55,20 @@
             <i class="fa-regular fa-user"></i>
             Login
           </button>
+
+          <div id="profile-btn" class="flex items-center border-1 border-light-gray rounded-8px px-0-5rem cursor-pointer relative hidden">
+            <div class="rounded-50p bg-blue text-white font-700 text-0-7rem flex items-center justify-center btn-26 pointer-events-none">
+              <span id="profile-letter"></span>
+            </div>
+            <button type="button" class="flex items-center justify-between gap-0-3rem border-none bg-transparent text-0-8rem font-600 py-0-5rem">
+              <span id="profile-name"></span>
+              <i class="fa-solid fa-chevron-down text-0-7rem"></i>
+            </button>
+
+            <div>
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -72,44 +86,16 @@
     <section class="flex flex-col justify-between gap-1rem md-flex-row md-items-center">
       <h1 class="text-1-5rem">Products</h1>
 
-      <div id="categoriesContainer" class="flex gap-0-5rem flex-wrap">
-        <!-- <div class="py-0-5rem">
-          <input type="radio" name="category" id="all" data-category="all" class="hidden" checked>
-          <label for="all"
-            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">All</label>
-        </div>
-
-        <div class="py-0-5rem">
-          <input type="radio" name="category" id="electronics" data-category="electronics" class="hidden">
-          <label for="electronics"
-            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Electronics</label>
-        </div>
-
-        <div class="py-0-5rem">
-          <input type="radio" name="category" id="accessories" data-category="accessories" class="hidden">
-          <label for="accessories"
-            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Accessories</label>
-        </div>
-
-        <div class="py-0-5rem">
-          <input type="radio" name="category" id="clothing" data-category="clothing" class="hidden">
-          <label for="clothing"
-            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Clothing</label>
-        </div>
-
-        <div class="py-0-5rem">
-          <input type="radio" name="category" id="home" data-category="home" class="hidden">
-          <label for="home"
-            class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer transition-all-03s-ease">Home</label>
-        </div> -->
+      <div id="categories-container" class="flex gap-0-5rem flex-wrap">
+        <!-- Categories appear here -->
       </div>
     </section>
 
-    <!-- Cards appear inside this section -->
+    
     <section id="cards-container" class="
     grid grid-cols-2 md-grid-cols-3 lg-grid-cols-4 gap-1rem
     ">
-      
+      <!-- Cards appear here -->
 
       
     </section>
@@ -135,9 +121,7 @@
       <div id="cart-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
 
       <!-- My products -->
-      <div id="my-products-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden">
-
-      </div>
+      <div id="my-products-container" class="px-0-5rem flex flex-col justify-start h-full gap-1rem overflow-y-auto hidden"></div>
 
       <div id="checkout-bar" class="border-t-1 border-light-gray flex flex-col gap-1rem py-1rem px-1rem">
         <p class="flex items-center justify-between">
@@ -175,25 +159,29 @@
 
         <div id="auth-form-container">
           <form id="auth-form" class="flex flex-col gap-1rem">
-            <div class="flex flex-col gap-0-5rem hidden" id="form-name-container">
+            <span id="auth-error" class="text-red font-600 text-0-7rem pointer-events-none hidden"></span>
+            <div class="flex flex-col gap-0-5rem relative hidden" id="form-name-container">
               <label for="nameInput" class="text-0-8rem font-600">Name</label>
               <input type="text" name="name" id="nameInput" placeholder="Your name"
                 class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
               >
+              <span class="text-0-7rem error-message text-red font-600 absolute bottom-0-9-n pointer-events-none"></span>
             </div>
 
-            <div class="flex flex-col gap-0-5rem">
+            <div class="flex flex-col gap-0-5rem relative">
               <label for="emailInput" class="text-0-8rem font-600">Email</label>
               <input type="email" name="email" id="emailInput" placeholder="you@example.com"
                 class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
               >
+              <span class="text-0-7rem error-message text-red font-600 absolute bottom-0-9-n pointer-events-none"></span>
             </div>
 
-            <div class="flex flex-col gap-0-5rem">
+            <div class="flex flex-col gap-0-5rem relative">
               <label for="passwordInput" class="text-0-8rem font-600">Password</label>
               <input type="password" name="password" id="passwordInput" placeholder="••••••"
                 class="border-1 border-light-gray rounded-8px py-0-5rem px-0-5rem transition-all-03s-ease focus-shadow-blue"
               >
+              <span class="text-0-7rem error-message text-red font-600 absolute bottom-0-9-n pointer-events-none"></span>
             </div>
 
             <div class="flex flex-col gap-1rem">
