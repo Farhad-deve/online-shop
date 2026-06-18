@@ -152,10 +152,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
     if (token) {
         const user = await getMe();
-        await getData(true);
         if (user) {
             setFavoriteIds(user.favorites);
             updateNavUI(user);
+            await getData(true);
+        } else {
+            getData(false)
         }
     } else {
         getData(false)
