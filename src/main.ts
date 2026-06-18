@@ -1,14 +1,15 @@
 import {
-    getAllData, showModal, closeModal, modal,
-    openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer,
+    showModal, closeModal, modal,
+    openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer, logOutBtn, myProductsBtn,
     authModeSwitch, Form, authBtn, authHintText, authLink, authTitle, formNameContainer,
     CardsContainer, AddProductContainer,
     products, filters, applyFilters, SearchInput, nameInput, emailInput, passwordInput,
-    updateNavUI
+    updateNavUI, favoriteIds, setFavoriteIds
 
 } from "./ts/functions";
 import { addToCart, renderCartItems } from "./ts/cartFunctions";
-import { getCategories, getMe, registerUser, loginUser } from "./ts/requests";
+import { renderFavoriteCards } from "./ts/favoriteFunctions";
+import { getMe, registerUser, loginUser, getData } from "./ts/requests";
 import { clearFormError, clearInputError, validateAuthForm } from "./ts/validation";
 
 let authMode: "login" | "register" = "login";
@@ -25,27 +26,12 @@ AddProductContainer.addEventListener('click', (e) => e.stopPropagation());
 modal.addEventListener('click', () => closeModal());
 closeModalBtn.forEach(btn => btn.addEventListener('click', () => closeModal()));
 
-CardsContainer.addEventListener('click', (e) => {
-    const target = e.target as HTMLButtonElement;
-
-    if (!target.classList.contains('add-to-cart-btn')) return;
-
-    const id = target.dataset.id;
-
-    const product = products.find(p => p.id === id);
-
-    if (!product) return;
-
-    addToCart(product);
-    renderCartItems();
-});
-
 
 SearchInput.addEventListener('input', () => {
     filters.search = SearchInput.value;
 
     applyFilters();
-})
+});
 
 authModeSwitch.addEventListener('change', (e) => {
     const target = e.target as HTMLInputElement;
@@ -81,6 +67,12 @@ authModeSwitch.addEventListener('change', (e) => {
     });
 });
 
+logOutBtn.addEventListener('click', async () => {
+    localStorage.removeItem("token");
+
+    updateNavUI(null);
+});
+
 
 Form.addEventListener('submit', async (e: SubmitEvent) => {
     e.preventDefault();
@@ -97,27 +89,28 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 true
             );
 
-            if (!isValid) return;
+            if (!isValid) {
+                return;
+            } else {
+                await registerUser({
+                    name: data.name as string,
+                    email: data.email as string,
+                    password: data.password as string
+                });
 
-            await registerUser({
-                name: data.name as string,
-                email: data.email as string,
-                password: data.password as string
-            });
+                const user = await getMe();
 
-            const user = await getMe();
+                updateNavUI(user);
+                closeModal();
+                Form.reset();
+                clearFormError();
 
-            updateNavUI(user);
+                clearInputError(nameInput);
+                clearInputError(emailInput);
+                clearInputError(passwordInput);
+            };
 
-            closeModal();
-            Form.reset();
-            clearFormError();
 
-            clearInputError(nameInput);
-            clearInputError(emailInput);
-            clearInputError(passwordInput);
-
-            
         } else {
             const isValid = validateAuthForm(
                 nameInput,
@@ -126,24 +119,27 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 false
             );
 
-            if (!isValid) return;
+            if (!isValid) {
+                return;
+            } else {
+                await loginUser({
+                    email: data.email as string,
+                    password: data.password as string
+                });
 
-            await loginUser({
-                email: data.email as string,
-                password: data.password as string
-            });
+                const user = await getMe();
 
-            const user = await getMe();
+                updateNavUI(user);
 
-            updateNavUI(user);
-            
-            closeModal();
-            Form.reset();
-            clearFormError();
+                closeModal();
+                Form.reset();
+                clearFormError();
 
-            clearInputError(nameInput);
-            clearInputError(emailInput);
-            clearInputError(passwordInput);
+                clearInputError(nameInput);
+                clearInputError(emailInput);
+                clearInputError(passwordInput);
+            };
+
         }
 
     } catch (error) {
@@ -153,15 +149,18 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
 })
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  if (!token) return;
+    if (!token) return;
 
-  const user = await getMe();
+    const user = await getMe();
 
-  updateNavUI(user);
+    if (user) {
+        setFavoriteIds(user.favorites);
+
+        updateNavUI(user);
+    }
 });
 
-getAllData();
-getCategories();
+getData();
 

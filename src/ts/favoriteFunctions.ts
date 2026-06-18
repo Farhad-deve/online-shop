@@ -1,33 +1,10 @@
-import { type FavoriteCard } from "./types";
-import { products } from "./functions";
+import { type FavoriteCard, type User } from "./types";
+import { showModal } from "./functions";
+import { addToFavorites, getFavorites, getMe, removeFromFavorites } from "./requests";
 
-let favoriteCards: FavoriteCard[] = [];
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
 const counterFavorites = document.querySelector('.counter-favorites') as HTMLSpanElement;
-
-export function pushToFavoriteList(product: FavoriteCard) {
-    const exists = favoriteCards.some(fCard => fCard.id === product.id);
-
-    if (!exists) {
-        favoriteCards.push(product);
-        counterFavorites.textContent = String(favoriteCards.length);
-        counterFavorites.classList.replace('opacity-0', 'opacity-100');
-        counterFavorites.classList.replace('translate-y-0-5rem', 'translate-y-0');
-    }
-
-}
-
-export function removeFromFavoriteList(id: string) {
-    favoriteCards = favoriteCards.filter(fCard => fCard.id !== id);
-
-    counterFavorites.textContent = String(favoriteCards.length);
-
-    if (favoriteCards.length === 0) {
-        counterFavorites.classList.replace('opacity-100', 'opacity-0');
-        counterFavorites.classList.replace('translate-y-0', 'translate-y-0-5rem');
-    }
-}
 
 
 export function createFavoriteCard(data: FavoriteCard) {
@@ -51,30 +28,46 @@ export function createFavoriteCard(data: FavoriteCard) {
     FavoriteContainer.appendChild(fCard);
 }
 
-export function renderFavoriteCards() {
+export function renderFavoriteCards(favorites: FavoriteCard[]) {
     FavoriteContainer.innerHTML = '';
 
-    favoriteCards.forEach((card) => {
+    favorites.forEach((card) => {
         createFavoriteCard(card);
     })
 }
 
-CardsContainer.addEventListener('change', (e) => {
-    const target = e.target as HTMLInputElement;
+CardsContainer.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
 
-    if (!target.classList.contains('favorite-checkbox')) return;
+    const favoriteBtn = target.closest('.favorite-btn');
 
-    const id = target.dataset.id as string;
+    if (!favoriteBtn) return;
 
-    const product = products.find(p => p.id === id);
+    const productId = favoriteBtn.getAttribute('data-id');
 
-    if (!product) return;
+    if (!productId) return;
 
-    if (target.checked) {
-        pushToFavoriteList(product);
-    } else {
-        removeFromFavoriteList(id);
+    try {
+        const user = await getMe();
+
+        if (!user) {
+            showModal("auth-mode");
+            return
+        };
+
+        const isFavorite = user.favorites.includes(productId);
+
+        if (isFavorite) {
+            await removeFromFavorites(productId);
+        } else {
+            await addToFavorites(productId);
+        }
+
+        const favorites = await getFavorites();
+        renderFavoriteCards(favorites);
+
+
+    } catch (error) {
+        console.error(error)
     }
-
-    renderFavoriteCards();
 })

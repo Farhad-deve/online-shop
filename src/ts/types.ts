@@ -52,7 +52,7 @@ export interface User {
     email: string;
     id: string;
     cart: CartItem[];
-    favorites: FavoriteCard[];
+    favorites: string[] ;
     createdAt: string;
     updatedAt: string;
 }

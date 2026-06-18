@@ -1,7 +1,5 @@
-import { api } from "../api/api";
-import { renderFavoriteCards } from "./favoriteFunctions";
-
-import { type ApiResponse, type Card, type User } from "./types";
+import { getProducts } from "./requests";
+import { type Card, type User } from "./types";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
@@ -21,8 +19,12 @@ export const openAuthContainerBtn = document.querySelector('#open-auth-container
 export const openAddProductBtn = document.querySelector('#open-add-product-btn') as HTMLButtonElement;
 
 export const profileBtn = document.querySelector('#profile-btn') as HTMLDivElement;
-export const profileName = document.querySelector('#profile-name') as HTMLSpanElement;
+export const profileName = document.querySelectorAll('#profile-name') as NodeListOf<HTMLSpanElement>;
 export const profileLetter = document.querySelector('#profile-letter') as HTMLSpanElement;
+export const profileEmail = document.querySelector('#profile-email') as HTMLSpanElement;
+
+export const logOutBtn = document.querySelector('#logout-btn') as HTMLButtonElement;
+export const myProductsBtn = document.querySelector('#my-products-btn') as HTMLButtonElement;
 
 export const SearchInput = document.querySelector('#search-input') as HTMLInputElement;
 export const nameInput = document.querySelector('#nameInput') as HTMLInputElement;
@@ -48,18 +50,25 @@ export const authLink = document.querySelector('#auth-link') as HTMLAnchorElemen
 
 export let products: Card[] = [];
 export const filters = {
-  category: "all",
+  category: "All",
   search: ""
 }
 
+export let favoriteIds: string[] = [];
 
-export function createCard(data: Card) {
+export function setFavoriteIds(ids: string[]) {
+  favoriteIds = ids; 
+}
+
+
+export function createCard(data: Card, favoriteIds : string[] = []) {
   const card = document.createElement("article");
   card.classList.add('card', 'rounded-8px', 'overflow-hidden', 'border-1', 'border-light-gray', 'bg-white', 'max-w-350px', 'transition-all-03s-ease', 'flex', 'flex-col');
+  const isFavorite = favoriteIds.includes(data.id);
   card.innerHTML = `
         <div class="relative">
           <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="object-cover h-150px md-h-250px w-full pointer-events-none border-b-1 border-light-gray transition-all-03s-ease">
-          <input type="checkbox" data-id="${data.id}" name="" id="favorite-checkbox-${data.id}" class="favorite-checkbox hidden">
+          <input type="checkbox" data-id="${data.id}" name="" id="favorite-checkbox-${data.id}" class="favorite-checkbox hidden" ${isFavorite ? "checked" : ""}>
           <div data-id="${data.id}" class="favorite-btn absolute btn-34 rounded-8px bg-light-red border-1 border-light-gray flex items-center justify-center">
             <label for="favorite-checkbox-${data.id}" class="cursor-pointer">
               <i class="fa-regular fa-heart text-gray heart-regular"></i>
@@ -89,10 +98,10 @@ export function createCard(data: Card) {
 export function createCategoryCard(data: string) {
   const category = document.createElement("div");
   category.classList.add('py-0-5rem');
-  const id = data.toLowerCase()
+  const id = data.toLocaleLowerCase().replace(/\s+/g, "-");
 
   category.innerHTML = `
-    <input type="radio" name="category" id="${id}" data-category="${id}" class="hidden" ${id === "all" ? "checked" : ""}>
+    <input type="radio" name="category" id="${id}" data-category="${data}" class="hidden" ${data === "All" ? "checked" : ""}>
     <label for="${id}"
       class="border-1 border-light-gray text-gray font-500 bg-white rounded-8px px-0-5rem py-0-5rem cursor-pointer capitalize transition-all-03s-ease">${data}</label>
   `
@@ -103,7 +112,7 @@ export function createCategoryCard(data: string) {
 export function renderAllcategories(categories: string[]) {
   CategoriesContainer.innerHTML = '';
 
-  createCategoryCard("all");
+  createCategoryCard("All");
 
   categories.forEach((category) => {
     createCategoryCard(category);
@@ -113,7 +122,7 @@ export function renderAllcategories(categories: string[]) {
 
   categoryInputs.forEach((input) => {
     input.addEventListener("change", () => {
-      filters.category = input.dataset.category ?? "all";
+      filters.category = input.dataset.category ?? "All";
 
       applyFilters();
     });
@@ -121,30 +130,15 @@ export function renderAllcategories(categories: string[]) {
 }
 
 
-export function applyFilters() {
-  let filteredProducts = products;
+export async function applyFilters() {
+  try {
+    const data = await getProducts(filters.search, filters.category);
 
-  if (filters.category !== "all") {
-    filteredProducts = filteredProducts.filter(
-      product =>
-        product.category.toLowerCase() === filters.category.toLowerCase()
-    );
+    renderAllCard(data);
+  } catch (error) {
+    console.error(error)
   }
-
-  if (filters.search.trim()) {
-    const query = filters.search.toLowerCase();
-
-    filteredProducts = filteredProducts.filter(
-      product =>
-        product.title.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query)
-    );
-  }
-
-  renderAllCard(filteredProducts);
 }
-
 
 export function renderAllCard(data: Card[]) {
   CardsContainer.innerHTML = '';
@@ -220,27 +214,13 @@ export function updateNavUI(user : User | null) {
     return;
   }
 
+  const currentUser = user;
+
   openAuthContainerBtn.classList.add('hidden');
 
-  profileName.textContent = user.name;
-  profileLetter.textContent = user.name.charAt(0).toUpperCase();
+  profileName.forEach((name) => { name.textContent = currentUser.name });
+  profileEmail.textContent = currentUser.email;
+  profileLetter.textContent = currentUser.name.charAt(0).toUpperCase();
   
   profileBtn.classList.remove('hidden');
-}
-
-export async function getAllData() {
-  try {
-    loading(true);
-    const response = await api<ApiResponse<Card[]>>("/products");
-    if (!response) return;
-
-    products = response.data.data;
-
-    loading(false);
-    renderAllCard(products);
-    renderFavoriteCards();
-
-  } catch (error) {
-    console.error(error)
-  }
 }

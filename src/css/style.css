@@ -346,6 +346,21 @@ header {
     width: clamp(18rem, 40vw, 40rem);
 }
 
+.dropdown-menu {
+    bottom: -7.3rem;
+    right: 0;
+    box-shadow: 0 4px 12px 0 #0F172A0F;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+}
+
+#profile-btn:hover .dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 
 /* ========== ========== ========== */
 
