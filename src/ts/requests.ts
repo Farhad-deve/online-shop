@@ -1,5 +1,6 @@
 import { api } from "../api/api";
 import { type RegUser, type LogUser, type ApiResponse, type Card, type User } from "../ts/types";
+import { renderFavoriteCards } from "./favoriteFunctions";
 import { loading, renderAllCard, renderAllcategories, setFavoriteIds } from "./functions";
 import { showFormError } from "./validation";
 
@@ -11,7 +12,8 @@ export async function getMe() : Promise<User | null> {
 
         const response = await api.get<ApiResponse<User>>('/auth/me');
 
-        console.log(response.data)
+
+        
         return response.data.data
     } catch (error) {
         console.error(error)
@@ -70,7 +72,11 @@ export async function getFavorites() {
     try {
         const response = await api.get('/favorites');
 
-        setFavoriteIds((await getMe())?.favorites ?? []);
+        const user = await getMe();
+
+        if (user) {
+            setFavoriteIds(user.favorites);
+        }
 
         return response.data.data
     } catch (error) {
@@ -83,7 +89,11 @@ export async function addToFavorites(productId : string) {
     try {
         const response = await api.post(`/favorites/${productId}`);
 
-        setFavoriteIds((await getMe())?.favorites ?? []);
+        const user = await getMe();
+
+        if (user) {
+            setFavoriteIds(user.favorites);
+        }
 
         return response.data
     } catch (error) {
@@ -95,6 +105,12 @@ export async function addToFavorites(productId : string) {
 export async function removeFromFavorites(productId : string) {
     try {
         const response = await api.delete(`/favorites/${productId}`);
+
+        const user = await getMe();
+
+        if (user) {
+            setFavoriteIds(user.favorites);
+        }
 
         return response.data
     } catch (error) {
@@ -119,11 +135,13 @@ export async function getData() {
         loading(true);
         const categories = await getCategories();
         const data = await getProducts();
+        const favorites = await getFavorites();
 
         
         loading(false);
         renderAllCard(data);
         renderAllcategories(categories);
+        renderFavoriteCards(favorites);
     } catch (error) {
         console.error(error)
     }

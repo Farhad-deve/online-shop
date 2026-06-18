@@ -1,3 +1,4 @@
+import { renderFavoriteCards } from "./favoriteFunctions";
 import { getProducts } from "./requests";
 import { type Card, type User } from "./types";
 
@@ -144,7 +145,7 @@ export function renderAllCard(data: Card[]) {
   CardsContainer.innerHTML = '';
 
   data.forEach((card) => {
-    createCard(card);
+    createCard(card, favoriteIds);
   });
 }
 
