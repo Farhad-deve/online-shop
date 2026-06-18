@@ -130,12 +130,12 @@ export async function getProducts(q = "", category = "all") {
     return response.data.data
 };
 
-export async function getData() {
+export async function getData(isLogin : boolean) {
     try {
         loading(true);
         const categories = await getCategories();
         const data = await getProducts();
-        const favorites = await getFavorites();
+        const favorites = isLogin && await getFavorites();
 
         
         loading(false);

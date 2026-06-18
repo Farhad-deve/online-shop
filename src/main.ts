@@ -150,17 +150,17 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
-
-    if (!token) return;
-
-    const user = await getMe();
-
-    if (user) {
-        setFavoriteIds(user.favorites);
-
-        updateNavUI(user);
-    }
+    if (token) {
+        const user = await getMe();
+        await getData(true);
+        if (user) {
+            setFavoriteIds(user.favorites);
+            updateNavUI(user);
+        }
+    } else {
+        getData(false)
+    };
 });
 
-getData();
+
 
