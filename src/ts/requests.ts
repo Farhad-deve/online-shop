@@ -135,6 +135,8 @@ export async function getData() {
         loading(true);
         const categories = await getCategories();
         const data = await getProducts();
+
+        
         const favorites = await getFavorites();
 
         

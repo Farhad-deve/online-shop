@@ -39,7 +39,7 @@ export function renderFavoriteCards(favorites: FavoriteCard[]) {
 CardsContainer.addEventListener('click', async (e) => {
     const target = e.target as HTMLElement;
 
-    const favoriteBtn = target.closest('.favorite-btn');
+    const favoriteBtn = target.closest('.favorite-checkbox');
 
     if (!favoriteBtn) return;
 
