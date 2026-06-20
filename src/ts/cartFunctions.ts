@@ -1,4 +1,4 @@
-import { type CartItem, type Card } from "./types";
+import { type Card } from "./types";
 
 let cartItems: CartItem[] = [];
 const CartContainer = document.querySelector("#cart-container") as HTMLElement;
@@ -9,7 +9,6 @@ const TotalPrice = document.querySelector('#total-price') as HTMLSpanElement;
 export function createCartItem(data: CartItem) {
     const cItem = document.createElement("div");
     cItem.classList.add('border-1', 'border-light-gray', 'rounded-8px', 'px-1rem', 'py-0-5rem', 'flex', 'flex-col', 'justify-between', 'gap-1rem');
-    const totalPrice = (data.price * data.quantity).toFixed(2);
     cItem.innerHTML = `
     <div class="flex items-center gap-0-5rem md-gap-1rem">
       <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
@@ -36,82 +35,15 @@ export function createCartItem(data: CartItem) {
   `
 
     CartContainer.appendChild(cItem);
-}
+};
 
-export function addToCart(product: Card) {
-    const existingItem = cartItems.find(item => item.id === product.id);
-
-    if (existingItem) {
-        existingItem.quantity++;
-    } else {
-        cartItems.push({
-            id: product.id,
-            title: product.title,
-            category: product.category,
-            price: product.price,
-            imageUrl: product.imageUrl,
-            quantity: 1
-        })
-        counterCarts.textContent = String(cartItems.length);
-        counterCarts.classList.replace('opacity-0', 'opacity-100');
-        counterCarts.classList.replace('translate-y-0-5rem', 'translate-y-0');
-    }
-
-    renderCartItems();
-}
-
-export function removeCartItem(id: string) {
-    cartItems = cartItems.filter(item => item.id !== id);
-
-    if (cartItems.length === 0) {
-        counterCarts.textContent = String(cartItems.length);
-        counterCarts.classList.replace('opacity-100', 'opacity-0');
-        counterCarts.classList.replace('translate-y-0', 'translate-y-0-5rem');
-    }
-
-    renderCartItems();
-}
-
-export function increaseQuantity(id: string) {
-    const item = cartItems.find(item => item.id === id);
-
-    if (!item) return;
-
-    item.quantity++;
-
-    renderCartItems();
-}
-
-export function decreaseQuantity(id: string) {
-    const item = cartItems.find(item => item.id === id);
-
-    if (!item) return;
-
-    item.quantity--;
-
-    if (item.quantity <= 0) {
-        removeCartItem(id);
-        return;
-    }
-
-    renderCartItems();
-}
-
-export function updateCartTotalPrice() {
-    const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    TotalPrice.textContent = `$${total.toFixed(2)}`;
-}
-
-export function renderCartItems() {
+export function renderCartItems(data : CartItem[]) {
     CartContainer.innerHTML = '';
 
-    cartItems.forEach((item) => {
+    data.forEach((item) => {
         createCartItem(item);
     })
-
-    updateCartTotalPrice();
-}
+};
 
 CartContainer.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
@@ -121,15 +53,5 @@ CartContainer.addEventListener('click', (e) => {
 
     if (!action) return;
 
-    if (action === "increase") {
-        increaseQuantity(id);
-    }
-
-    if (action === "decrease") {
-        decreaseQuantity(id)
-    }
-
-    if (action === "remove") {
-        removeCartItem(id)
-    }
-})
+    
+});

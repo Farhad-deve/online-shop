@@ -1,5 +1,5 @@
-import { type FavoriteCard, type User } from "./types";
-import { showModal } from "./functions";
+import { type FavoriteCard } from "./types";
+import { favoriteIds, showModal } from "./functions";
 import { addToFavorites, getFavorites, getMe, removeFromFavorites } from "./requests";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
@@ -36,10 +36,37 @@ export function renderFavoriteCards(favorites: FavoriteCard[]) {
     })
 }
 
-CardsContainer.addEventListener('click', async (e) => {
-    const target = e.target as HTMLElement;
+export function updateCounterFavorites() {
+    const count = favoriteIds.length;
 
-    const favoriteBtn = target.closest('.favorite-checkbox');
+    counterFavorites.textContent = String(count);
+
+    if (count === 0) {
+        counterFavorites.classList.replace('opacity-100', 'opacity-0');
+        counterFavorites.classList.replace('translate-y-0', 'translate-y-0-5rem');
+    } else {
+        counterFavorites.classList.replace('opacity-0', 'opacity-100');
+        counterFavorites.classList.replace('translate-y-0-5rem', 'translate-y-0');
+    }
+}
+
+export function clearFavoritesUI() {
+    FavoriteContainer.innerHTML = '';
+}
+
+export function clearFavoriteCheckboxes() {
+    const favoriteCheckboxes = document.querySelectorAll('.favorite-checkbox') as NodeListOf<HTMLInputElement>;
+
+    favoriteCheckboxes.forEach((checkbox) => {
+        checkbox.checked = false;
+    })
+}
+
+
+CardsContainer.addEventListener('click', async (e) => {
+    const target = e.target as HTMLInputElement;
+
+    const favoriteBtn = target.closest('.favorite-checkbox')
 
     if (!favoriteBtn) return;
 
@@ -51,6 +78,7 @@ CardsContainer.addEventListener('click', async (e) => {
         const user = await getMe();
 
         if (!user) {
+            target.checked = false;
             showModal("auth-mode");
             return
         };
@@ -66,8 +94,7 @@ CardsContainer.addEventListener('click', async (e) => {
         const favorites = await getFavorites();
         renderFavoriteCards(favorites);
 
-
     } catch (error) {
         console.error(error)
     }
-})
+});

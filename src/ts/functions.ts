@@ -1,4 +1,4 @@
-import { renderFavoriteCards } from "./favoriteFunctions";
+import { updateCounterFavorites } from "./favoriteFunctions";
 import { getProducts } from "./requests";
 import { type Card, type User } from "./types";
 
@@ -49,7 +49,7 @@ export const authBtn = document.querySelector('#auth-btn') as HTMLButtonElement;
 export const authHintText = document.querySelector('#auth-hint-text') as HTMLSpanElement;
 export const authLink = document.querySelector('#auth-link') as HTMLAnchorElement;
 
-export let products: Card[] = [];
+
 export const filters = {
   category: "All",
   search: ""
@@ -59,7 +59,9 @@ export let favoriteIds: string[] = [];
 
 export function setFavoriteIds(ids: string[]) {
   favoriteIds = ids; 
-}
+
+  updateCounterFavorites();
+};
 
 
 export function createCard(data: Card, favoriteIds : string[] = []) {
@@ -94,7 +96,7 @@ export function createCard(data: Card, favoriteIds : string[] = []) {
   `
 
   CardsContainer.appendChild(card);
-}
+};
 
 export function createCategoryCard(data: string) {
   const category = document.createElement("div");
@@ -108,7 +110,7 @@ export function createCategoryCard(data: string) {
   `
 
   CategoriesContainer.appendChild(category);
-}
+};
 
 export function renderAllcategories(categories: string[]) {
   CategoriesContainer.innerHTML = '';
@@ -128,7 +130,7 @@ export function renderAllcategories(categories: string[]) {
       applyFilters();
     });
   });
-}
+};
 
 
 export async function applyFilters() {
@@ -139,7 +141,7 @@ export async function applyFilters() {
   } catch (error) {
     console.error(error)
   }
-}
+};
 
 export function renderAllCard(data: Card[]) {
   CardsContainer.innerHTML = '';
@@ -147,7 +149,7 @@ export function renderAllCard(data: Card[]) {
   data.forEach((card) => {
     createCard(card, favoriteIds);
   });
-}
+};
 
 export function loading(state: boolean) {
   if (state) {
@@ -155,7 +157,7 @@ export function loading(state: boolean) {
   } else {
     loader.classList.replace('opacity-100', 'opacity-0');
   }
-}
+};
 
 export function showModal(type: string) {
   if (type === "favorites") {
@@ -200,13 +202,13 @@ export function showModal(type: string) {
     Aside.classList.replace('translate-x-0', 'translate-x-full');
   }
 
-}
+};
 
 export function closeModal() {
   modal.classList.replace('opacity-100', 'opacity-0');
   modal.classList.replace('pointer-events-auto', 'pointer-events-none');
   Aside.classList.replace('translate-x-0', 'translate-x-full');
-}
+};
 
 export function updateNavUI(user : User | null) {
   if (!user) {
@@ -224,4 +226,4 @@ export function updateNavUI(user : User | null) {
   profileLetter.textContent = currentUser.name.charAt(0).toUpperCase();
   
   profileBtn.classList.remove('hidden');
-}
+};

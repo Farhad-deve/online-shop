@@ -3,13 +3,14 @@ import {
     openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer, logOutBtn, myProductsBtn,
     authModeSwitch, Form, authBtn, authHintText, authLink, authTitle, formNameContainer,
     CardsContainer, AddProductContainer,
-    products, filters, applyFilters, SearchInput, nameInput, emailInput, passwordInput,
-    updateNavUI, favoriteIds, setFavoriteIds
+    filters, applyFilters, SearchInput, nameInput, emailInput, passwordInput,
+    updateNavUI, setFavoriteIds,
+    favoriteIds
 
 } from "./ts/functions";
-import { addToCart, renderCartItems } from "./ts/cartFunctions";
-import { renderFavoriteCards } from "./ts/favoriteFunctions";
-import { getMe, registerUser, loginUser, getData } from "./ts/requests";
+import { addToCart, renderCartItems, updateCartTotalPrice } from "./ts/cartFunctions";
+import { clearFavoriteCheckboxes, clearFavoritesUI, renderFavoriteCards } from "./ts/favoriteFunctions";
+import { getMe, registerUser, loginUser, getData, getCarts } from "./ts/requests";
 import { clearFormError, clearInputError, validateAuthForm } from "./ts/validation";
 
 let authMode: "login" | "register" = "login";
@@ -28,9 +29,11 @@ closeModalBtn.forEach(btn => btn.addEventListener('click', () => closeModal()));
 
 
 SearchInput.addEventListener('input', () => {
-    filters.search = SearchInput.value;
+    filters.search = SearchInput.value.trim();
 
-    applyFilters();
+    setTimeout(() => {
+        applyFilters();
+    }, 1000)
 });
 
 authModeSwitch.addEventListener('change', (e) => {
@@ -71,6 +74,10 @@ logOutBtn.addEventListener('click', async () => {
     localStorage.removeItem("token");
 
     updateNavUI(null);
+    setFavoriteIds([]);
+    clearFavoritesUI();
+    clearFavoriteCheckboxes();
+    getData(false);
 });
 
 
@@ -108,6 +115,7 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 clearInputError(nameInput);
                 clearInputError(emailInput);
                 clearInputError(passwordInput);
+                getData(true);
             };
 
 
@@ -138,6 +146,7 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 clearInputError(nameInput);
                 clearInputError(emailInput);
                 clearInputError(passwordInput);
+                getData(true);
             };
 
         }
@@ -150,17 +159,19 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
 
 window.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
-
-    if (!token) return;
-
-    const user = await getMe();
-
-    if (user) {
-        setFavoriteIds(user.favorites);
-
-        updateNavUI(user);
-    }
+    if (token) {
+        const user = await getMe();
+        if (user) {
+            setFavoriteIds(user.favorites);
+            updateNavUI(user);
+            await getData(true);
+        } else {
+            getData(false)
+        }
+    } else {
+        getData(false)
+    };
 });
 
-getData();
+
 

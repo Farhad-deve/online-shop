@@ -1,10 +1,11 @@
 import { api } from "../api/api";
-import { type RegUser, type LogUser, type ApiResponse, type Card, type User } from "../ts/types";
+import { type RegUser, type LogUser, type ApiResponse, type Card, type User, type FavoriteCard, type CartItem } from "../ts/types";
+import { renderCartItems } from "./cartFunctions";
 import { renderFavoriteCards } from "./favoriteFunctions";
 import { loading, renderAllCard, renderAllcategories, setFavoriteIds } from "./functions";
 import { showFormError } from "./validation";
 
-export async function getMe() : Promise<User | null> {
+export async function getMe(): Promise<User | null> {
     try {
         const token = localStorage.getItem('token');
 
@@ -12,8 +13,6 @@ export async function getMe() : Promise<User | null> {
 
         const response = await api.get<ApiResponse<User>>('/auth/me');
 
-
-        
         return response.data.data
     } catch (error) {
         console.error(error)
@@ -60,17 +59,22 @@ export async function loginUser(userData: LogUser) {
 
 export async function getCategories() {
     try {
-        const response = await api.get('/products/categories');
+        const response = await api.get<ApiResponse<string[]>>('/products/categories');
 
         return response.data.data
     } catch (error) {
         console.error(error)
+        return [];
     }
 };
 
 export async function getFavorites() {
     try {
-        const response = await api.get('/favorites');
+        const token = localStorage.getItem('token');
+
+        if (!token) return [];
+
+        const response = await api.get<ApiResponse<FavoriteCard[]>>('/favorites');
 
         const user = await getMe();
 
@@ -85,7 +89,42 @@ export async function getFavorites() {
     }
 }
 
-export async function addToFavorites(productId : string) {
+export async function getCarts() {
+    try {
+        const token = localStorage.getItem('token');
+
+        if (!token) return [];
+
+        const response = await api.get<ApiResponse<CartItem[]>>('/cart');
+
+        console.log(response.data.data)
+        return response.data.data
+    } catch (error) {
+        console.error(error)
+        return [];
+    }
+}
+
+export async function addToCart(productId: string) {
+    try {
+        const response = await api.post(`/cart/${productId}`);
+
+        const user = await getMe();
+
+        if (user) {
+            renderCartItems(user.cart);
+        }
+
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error;
+    }
+};
+
+
+
+export async function addToFavorites(productId: string) {
     try {
         const response = await api.post(`/favorites/${productId}`);
 
@@ -102,7 +141,7 @@ export async function addToFavorites(productId : string) {
     }
 }
 
-export async function removeFromFavorites(productId : string) {
+export async function removeFromFavorites(productId: string) {
     try {
         const response = await api.delete(`/favorites/${productId}`);
 
@@ -120,6 +159,7 @@ export async function removeFromFavorites(productId : string) {
 }
 
 export async function getProducts(q = "", category = "all") {
+
     const response = await api.get<ApiResponse<Card[]>>("/products", {
         params: {
             q,
@@ -130,20 +170,24 @@ export async function getProducts(q = "", category = "all") {
     return response.data.data
 };
 
-export async function getData() {
+export async function getData(isLogin: boolean) {
     try {
         loading(true);
         const categories = await getCategories();
         const data = await getProducts();
-
-        
         const favorites = await getFavorites();
+        const carts = await getCarts();
 
-        
         loading(false);
-        renderAllCard(data);
-        renderAllcategories(categories);
-        renderFavoriteCards(favorites);
+        if (isLogin === true) {
+            renderAllCard(data);
+            renderAllcategories(categories);
+            renderFavoriteCards(favorites);
+        } else if (isLogin === false) {
+            renderAllCard(data);
+            renderAllcategories(categories);
+            getCarts();
+        }
     } catch (error) {
         console.error(error)
     }

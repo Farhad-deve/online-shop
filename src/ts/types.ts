@@ -33,8 +33,25 @@ export interface FavoriteCard {
     imageUrl: string;
 }
 
-export interface CartItem extends FavoriteCard {
-    quantity: number;
+export interface CartProduct {
+    id: string;
+    title: string;
+    category: string;
+    price: number;
+    imageUrl: string;
+    status: string;
+}
+
+export interface CartItem {
+    product: CartProduct;
+    qty: number;
+    subtotal: number;
+}
+
+export interface CartResponse {
+    items: CartItem[];
+    total: number;
+    count: number;
 }
 
 export interface LogUser {
