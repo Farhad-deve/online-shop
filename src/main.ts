@@ -1,24 +1,24 @@
 import {
     showModal, closeModal, modal,
-    openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer, logOutBtn, myProductsBtn,
-    authModeSwitch, Form, authBtn, authHintText, authLink, authTitle, formNameContainer,
-    CardsContainer, AddProductContainer,
+    openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer, logOutBtn,
+    authModeSwitch, Form, addProductForm, authBtn, authHintText, authLink, authTitle, formNameContainer, AddProductContainer,
     filters, applyFilters, SearchInput, nameInput, emailInput, passwordInput,
     updateNavUI, setFavoriteIds,
-    favoriteIds
+    openMyProductsBtn, imageInput, previewImage, previewImageContainer, titleInput, categoryInput, priceInput, uploadLabel
 
 } from "./ts/functions";
-import { addToCart, renderCartItems, updateCartTotalPrice } from "./ts/cartFunctions";
-import { clearFavoriteCheckboxes, clearFavoritesUI, renderFavoriteCards } from "./ts/favoriteFunctions";
-import { getMe, registerUser, loginUser, getData, getCarts } from "./ts/requests";
-import { clearFormError, clearInputError, validateAuthForm } from "./ts/validation";
+import { clearFavoriteCheckboxes, clearFavoritesUI } from "./ts/favoriteFunctions";
+import { registerUser, loginUser, getData, addProduct, updateMyProduct } from "./ts/requests";
+import { clearFormError, clearInputError, validateAddProductForm, validateAuthForm } from "./ts/validation";
+import { setEditingProduct } from "./ts/productState";
 
-let authMode: "login" | "register" = "login";
+let authMode: "login" | "register" = "login"
+
 
 openFavoriteBtn.addEventListener('click', () => showModal("favorites"));
 openCartBtn.addEventListener('click', () => showModal("cart"));
 openAuthContainerBtn.addEventListener('click', () => showModal("auth-mode"));
-openAddProductBtn.addEventListener('click', () => showModal("add-product"));
+openMyProductsBtn.addEventListener('click', () => showModal("my-products"));
 
 AuthContainer.addEventListener('click', (e) => e.stopPropagation());
 Aside.addEventListener('click', (e) => e.stopPropagation());
@@ -28,12 +28,14 @@ modal.addEventListener('click', () => closeModal());
 closeModalBtn.forEach(btn => btn.addEventListener('click', () => closeModal()));
 
 
+let searchTimer: number | undefined;
 SearchInput.addEventListener('input', () => {
     filters.search = SearchInput.value.trim();
 
-    setTimeout(() => {
+    clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
         applyFilters();
-    }, 1000)
+    }, 400);
 });
 
 authModeSwitch.addEventListener('change', (e) => {
@@ -80,6 +82,23 @@ logOutBtn.addEventListener('click', async () => {
     getData(false);
 });
 
+[titleInput, categoryInput, priceInput].forEach((input) => {
+    input.addEventListener('input', () => {
+        input.classList.remove('bg-light-red', 'placeholder-text-red', 'error-focus');
+        const errorMsg = input.parentElement?.querySelector('.error-message');
+
+        if (errorMsg) {
+            errorMsg.textContent = '';
+        }
+    })
+});
+
+imageInput.addEventListener('change', () => {
+    if (imageInput.files && imageInput.files.length > 0) {
+        uploadLabel.classList.remove('bg-light-red', 'border-1', 'border-red');
+    }
+})
+
 
 Form.addEventListener('submit', async (e: SubmitEvent) => {
     e.preventDefault();
@@ -105,9 +124,8 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                     password: data.password as string
                 });
 
-                const user = await getMe();
+                
 
-                updateNavUI(user);
                 closeModal();
                 Form.reset();
                 clearFormError();
@@ -115,7 +133,6 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 clearInputError(nameInput);
                 clearInputError(emailInput);
                 clearInputError(passwordInput);
-                getData(true);
             };
 
 
@@ -135,10 +152,6 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                     password: data.password as string
                 });
 
-                const user = await getMe();
-
-                updateNavUI(user);
-
                 closeModal();
                 Form.reset();
                 clearFormError();
@@ -146,31 +159,103 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
                 clearInputError(nameInput);
                 clearInputError(emailInput);
                 clearInputError(passwordInput);
-                getData(true);
             };
 
         }
+        await getData(true);
 
     } catch (error) {
         console.error(error)
     }
 
+});
+
+addProductForm.addEventListener('submit', async (e : SubmitEvent) => {
+    e.preventDefault();
+
+    const mode = (window as any).productFormMode || "create";
+    const editingId = (window as any).currentEditingProductId;
+
+    const isFormValid = validateAddProductForm(
+        titleInput,
+        categoryInput,
+        priceInput,
+        mode === "create" ? imageInput : ({} as HTMLInputElement)
+    );
+
+    if (!isFormValid) return;
+
+    const rawFormData = new FormData(addProductForm);
+    const priceValue = rawFormData.get('price') as string;
+    const cleanPrice = parseFloat(priceValue) || 0;
+    rawFormData.set('price', String(cleanPrice));
+
+    if (mode === "edit" && imageInput.files?.length === 0) {
+        rawFormData.delete('image');
+    }
+
+    try {
+       if (mode === "create") {
+            // Run normal create process
+            await addProduct(rawFormData);
+        } else if (mode === "edit" && editingId) {
+            // Run our new update API call instead!
+            await updateMyProduct(editingId, rawFormData);
+        }
+
+        addProductForm.reset();
+        previewImage.src = '';
+
+        (window as any).productFormMode = "create";
+        (window as any).currentEditingProductId = null;
+
+        closeModal();
+        await getData(true);
+        
+    } catch (error) {
+        console.error("Could not add product: ", error);
+    }
 })
 
 window.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
     if (token) {
-        const user = await getMe();
-        if (user) {
-            setFavoriteIds(user.favorites);
-            updateNavUI(user);
-            await getData(true);
-        } else {
-            getData(false)
-        }
+        getData(true);
     } else {
         getData(false)
     };
+});
+
+openAddProductBtn.addEventListener('click', () => {
+    setEditingProduct(null, "create");
+    
+    const addProductForm = document.getElementById('add-product-form') as HTMLFormElement;
+    if (addProductForm) {
+        addProductForm.reset();
+        const previewImage = document.querySelector('#preview-image') as HTMLImageElement;
+        if (previewImage) previewImage.src = "";
+    }
+    
+    const modalTitle = document.querySelector('#modal-title') as HTMLHeadElement;
+    if (modalTitle) modalTitle.textContent = "Add Product";
+
+    showModal("add-product");
+})
+
+previewImageContainer.classList.add('hidden');
+imageInput.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+
+    if (file) {
+        const objectUrl = URL.createObjectURL(file);
+
+        previewImage.src = objectUrl;
+        previewImageContainer.classList.remove('hidden');
+
+        previewImage.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+        }
+    }
 });
 
 

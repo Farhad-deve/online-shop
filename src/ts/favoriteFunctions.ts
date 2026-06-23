@@ -1,18 +1,19 @@
 import { type FavoriteCard } from "./types";
-import { favoriteIds, showModal } from "./functions";
-import { addToFavorites, getFavorites, getMe, removeFromFavorites } from "./requests";
+import { currentUser, favoriteIds, setFavoriteIds, showModal } from "./functions";
+import { addToFavorites, getFavorites, removeFromFavorites } from "./requests";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
 const counterFavorites = document.querySelector('.counter-favorites') as HTMLSpanElement;
 
+let localFavorites: FavoriteCard[] = [];
 
 export function createFavoriteCard(data: FavoriteCard) {
     const fCard = document.createElement("div");
     fCard.classList.add('border-1', 'border-light-gray', 'rounded-8px', 'px-1rem', 'py-0-5rem', 'flex', 'justify-between');
     fCard.innerHTML = `
     <div class="flex items-center gap-0-5rem md-gap-1rem">
-      <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none btn-42">
+      <img src="${data.imageUrl}" alt="${data.title}" loading="lazy" class="rounded-8px pointer-events-none border-1 border-light-gray btn-42">
       <div class="md-flex md-flex-col flex flex-col justify-between">
         <h4 class="leading-tight text-0-8rem">${data.title}</h4>
         <p class="text-gray text-0-7rem capitalize">${data.category}</p>
@@ -29,6 +30,7 @@ export function createFavoriteCard(data: FavoriteCard) {
 }
 
 export function renderFavoriteCards(favorites: FavoriteCard[]) {
+    localFavorites = favorites;
     FavoriteContainer.innerHTML = '';
 
     favorites.forEach((card) => {
@@ -66,35 +68,63 @@ export function clearFavoriteCheckboxes() {
 CardsContainer.addEventListener('click', async (e) => {
     const target = e.target as HTMLInputElement;
 
-    const favoriteBtn = target.closest('.favorite-checkbox')
-
+    const favoriteBtn = target.closest('.favorite-checkbox') as HTMLInputElement;
     if (!favoriteBtn) return;
 
     const productId = favoriteBtn.getAttribute('data-id');
-
     if (!productId) return;
 
-    try {
-        const user = await getMe();
+    if (!currentUser) {
+        target.checked = false;
+        showModal("auth-mode");
+        return
+    };
 
-        if (!user) {
-            target.checked = false;
-            showModal("auth-mode");
-            return
-        };
+    const isAlreadyFavorite = currentUser.favorites.includes(productId);
 
-        const isFavorite = user.favorites.includes(productId);
+    const originalUserFavorites = [...currentUser.favorites];
+    const originalFavoriteIds = [...favoriteIds];
+    const originalLocalFavorites = [...localFavorites];
 
-        if (isFavorite) {
-            await removeFromFavorites(productId);
-        } else {
-            await addToFavorites(productId);
+    if (isAlreadyFavorite) {
+        currentUser.favorites = currentUser.favorites.filter(id => id !== productId);
+        setFavoriteIds(favoriteIds.filter(id => id !== productId));
+        localFavorites = localFavorites.filter(card => card.id !== productId);
+    } else {
+        currentUser.favorites.push(productId);
+        setFavoriteIds([...favoriteIds, productId]);
+
+        const cardArticle = favoriteBtn.closest('article');
+        if (cardArticle) {
+            const title = cardArticle.querySelector('h3')?.textContent || "";
+            const category = cardArticle.querySelector('p')?.textContent || "";
+            const priceText = cardArticle.querySelector('.font-700')?.textContent || "";
+            const price = parseFloat(priceText.replace("$", ""));
+            const imageUrl = cardArticle.querySelector('img')?.src || "";
+            
+            localFavorites.push({ id: productId, title, category, price, imageUrl });
         }
 
-        const favorites = await getFavorites();
-        renderFavoriteCards(favorites);
+        renderFavoriteCards(localFavorites);
+    }
+
+    try {
+        if (isAlreadyFavorite) {
+            await removeFromFavorites(productId);
+        } else {
+            addToFavorites(productId);
+        }
+
+        const freshFavorites = await getFavorites();
+        renderFavoriteCards(freshFavorites);
 
     } catch (error) {
-        console.error(error)
+        console.error("Favorite sync failed, rolling back UI...", error);
+
+        currentUser.favorites = originalUserFavorites;
+        setFavoriteIds(originalFavoriteIds);
+        renderFavoriteCards(originalLocalFavorites);
+
+        favoriteBtn.checked = isAlreadyFavorite;
     }
 });

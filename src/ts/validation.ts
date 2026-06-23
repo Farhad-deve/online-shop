@@ -69,3 +69,36 @@ export function validateAuthForm(
     return isValid
 
 };
+
+export function validateAddProductForm(
+    titleInput : HTMLInputElement,
+    categoryInput : HTMLInputElement,
+    priceInput : HTMLInputElement,
+    imageInput : HTMLInputElement
+) : boolean {
+    let isValid = true;
+
+    if (!titleInput.value.trim()) {
+        showInputError(titleInput, "Title is required");
+        isValid = false;
+    }
+
+    if (!categoryInput.value.trim()) {
+        showInputError(categoryInput, "Category is required");
+        isValid = false;
+    }
+
+    const priceValue = parseFloat(priceInput.value);
+    if (!priceInput.value.trim() || isNaN(priceValue) || priceValue <= 0) {
+        showInputError(priceInput, "Price must be a positive number");
+        isValid = false;
+    }
+
+    if (!imageInput.files || imageInput.files.length === 0) {
+        const uploadLabel = document.querySelector('label[for="imageInput"]')
+        if (uploadLabel) uploadLabel.classList.add('bg-light-red', 'border-1', 'border-red')
+        isValid = false;
+    }
+
+    return isValid;
+}

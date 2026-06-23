@@ -8,7 +8,7 @@ export interface Card {
     imageUrl: string;
     imagePublicId: string;
 
-    owner: Owner;
+    owner: string;
     status: string;
 
     createdAt: string;
@@ -48,8 +48,8 @@ export interface CartItem {
     subtotal: number;
 }
 
-export interface CartResponse {
-    items: CartItem[];
+export interface CartResponse<T> {
+    items: T;
     total: number;
     count: number;
 }

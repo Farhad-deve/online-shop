@@ -2,10 +2,12 @@ import { updateCounterFavorites } from "./favoriteFunctions";
 import { getProducts } from "./requests";
 import { type Card, type User } from "./types";
 
+
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;
 const FavoriteContainer = document.querySelector("#favorite-container") as HTMLElement;
 export const AuthContainer = document.querySelector("#auth-container") as HTMLElement;
 export const AddProductContainer = document.getElementById("add-product-container") as HTMLElement;
+export const MyProductsContainer = document.querySelector("#my-products-container") as HTMLElement;
 export const CategoriesContainer = document.querySelector("#categories-container") as HTMLElement;
 
 export const modal = document.querySelector('#modal') as HTMLDivElement;
@@ -18,6 +20,7 @@ export const openFavoriteBtn = document.querySelector('#open-favorite-btn') as H
 export const openCartBtn = document.querySelector('#open-cart-btn') as HTMLButtonElement;
 export const openAuthContainerBtn = document.querySelector('#open-auth-container-btn') as HTMLButtonElement;
 export const openAddProductBtn = document.querySelector('#open-add-product-btn') as HTMLButtonElement;
+export const openMyProductsBtn = document.querySelector('#open-my-products-btn') as HTMLButtonElement;
 
 export const profileBtn = document.querySelector('#profile-btn') as HTMLDivElement;
 export const profileName = document.querySelectorAll('#profile-name') as NodeListOf<HTMLSpanElement>;
@@ -32,6 +35,15 @@ export const nameInput = document.querySelector('#nameInput') as HTMLInputElemen
 export const emailInput = document.querySelector('#emailInput') as HTMLInputElement;
 export const passwordInput = document.querySelector('#passwordInput') as HTMLInputElement;
 
+export const imageInput = document.querySelector('#imageInput') as HTMLInputElement;
+export const previewImage = document.querySelector('#preview-image') as HTMLImageElement;
+export const previewImageContainer = document.querySelector('#preview-image-container') as HTMLDivElement;
+export const titleInput = document.querySelector('#TitleInput') as HTMLInputElement;
+export const categoryInput = document.querySelector('#categoryInput') as HTMLInputElement;
+export const priceInput = document.querySelector('#priceInput') as HTMLInputElement;
+export const descriptionTextArea = document.querySelector('#descriptionTextArea') as HTMLTextAreaElement;
+export const uploadLabel = document.querySelector('label[for="imageInput"]') as HTMLLabelElement;
+
 export const closeModalBtn = document.querySelectorAll('#close-modal-btn') as NodeListOf<HTMLButtonElement>;
 export const authModeInputs = document.querySelectorAll('input[name="auth-mode"]') as NodeListOf<HTMLInputElement>;
 export const authModeSwitch = document.querySelector('#auth-mode-switch') as HTMLDivElement;
@@ -43,6 +55,7 @@ const CartContainer = document.querySelector("#cart-container") as HTMLElement;
 const loader = document.querySelector('#loader') as HTMLDivElement;
 
 export const Form = document.querySelector('#auth-form') as HTMLFormElement;
+export const addProductForm = document.getElementById('add-product-form') as HTMLFormElement;
 
 export const formNameContainer = document.querySelector('#form-name-container') as HTMLDivElement;
 export const authBtn = document.querySelector('#auth-btn') as HTMLButtonElement;
@@ -56,6 +69,11 @@ export const filters = {
 }
 
 export let favoriteIds: string[] = [];
+export let currentUser: User | null = null;
+
+export function setCurrentUser(user: User | null) {
+  currentUser = user;
+};
 
 export function setFavoriteIds(ids: string[]) {
   favoriteIds = ids; 
@@ -162,6 +180,7 @@ export function loading(state: boolean) {
 export function showModal(type: string) {
   if (type === "favorites") {
     FavoriteContainer.classList.remove('hidden');
+    MyProductsContainer.classList.add('hidden');
     CartContainer.classList.add('hidden');
     AuthContainer.classList.add('hidden');
     checkoutBar.classList.add('hidden')
@@ -171,8 +190,9 @@ export function showModal(type: string) {
     Aside.classList.replace('translate-x-full', 'translate-x-0');
     modalTitle.textContent = "Favorites";
   } else if (type === "cart") {
-    FavoriteContainer.classList.add('hidden');
     CartContainer.classList.remove('hidden');
+    MyProductsContainer.classList.add('hidden');
+    FavoriteContainer.classList.add('hidden');
     AddProductContainer.classList.add('hidden');
     AuthContainer.classList.add('hidden');
     checkoutBar.classList.remove('hidden')
@@ -181,33 +201,44 @@ export function showModal(type: string) {
     Aside.classList.replace('translate-x-full', 'translate-x-0');
     modalTitle.textContent = "Cart";
   } else if (type === "auth-mode") {
+    AuthContainer.classList.remove('hidden');
+    MyProductsContainer.classList.add('hidden');
     FavoriteContainer.classList.add('hidden');
     CartContainer.classList.add('hidden');
     AddProductContainer.classList.add('hidden');
-    AuthContainer.classList.remove('hidden');
     Aside.classList.replace('translate-x-0', 'translate-x-full');
     modal.classList.replace('opacity-0', 'opacity-100');
     modal.classList.replace('pointer-events-none', 'pointer-events-auto');
   } else if (type === "add-product") {
+    AddProductContainer.classList.remove('hidden');
+    MyProductsContainer.classList.add('hidden');
     FavoriteContainer.classList.add('hidden');
     CartContainer.classList.add('hidden');
     AuthContainer.classList.add('hidden');
-    AddProductContainer.classList.remove('hidden');
     Aside.classList.replace('translate-x-0', 'translate-x-full');
     modal.classList.replace('opacity-0', 'opacity-100');
     modal.classList.replace('pointer-events-none', 'pointer-events-auto');
-  } else {
-    modal.classList.replace('opacity-100', 'opacity-0');
-    modal.classList.replace('pointer-events-auto', 'pointer-events-none');
-    Aside.classList.replace('translate-x-0', 'translate-x-full');
+  } else if (type === "my-products") {
+    MyProductsContainer.classList.remove('hidden');
+    FavoriteContainer.classList.add('hidden');
+    CartContainer.classList.add('hidden');
+    AuthContainer.classList.add('hidden');
+    checkoutBar.classList.add('hidden')
+    AddProductContainer.classList.add('hidden');
+    Aside.classList.replace('translate-x-full', 'translate-x-0');
+    modal.classList.replace('opacity-0', 'opacity-100');
+    modal.classList.replace('pointer-events-none', 'pointer-events-auto');
+    modalTitle.textContent = "My Products";
   }
-
 };
 
 export function closeModal() {
   modal.classList.replace('opacity-100', 'opacity-0');
   modal.classList.replace('pointer-events-auto', 'pointer-events-none');
   Aside.classList.replace('translate-x-0', 'translate-x-full');
+  addProductForm.reset();
+  previewImageContainer.classList.add('hidden');
+  previewImage.src = '';
 };
 
 export function updateNavUI(user : User | null) {
