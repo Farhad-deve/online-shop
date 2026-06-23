@@ -1,9 +1,15 @@
 import { api } from "../api/api";
-import { type RegUser, type LogUser, type ApiResponse, type Card, type User, type FavoriteCard, type CartItem, type CartResponse } from "../ts/types";
+import { type RegUser, type LogUser, type ApiResponse,
+    type Card, type User, type FavoriteCard,
+    type CartItem, type CartResponse
+} from "../ts/types";
 import { renderCartItems } from "./cartFunctions";
 import { renderFavoriteCards } from "./favoriteFunctions";
-import { loading, renderAllCard, renderAllcategories, setFavoriteIds, setCurrentUser, currentUser, updateNavUI } from "./functions";
 import { renderMyProducts } from "./myProductsFunctions";
+import { loading, updateNavUI } from "./ui";
+
+import { renderAllCard, renderAllcategories } from "./renderers";
+import { setFavoriteIds, setCurrentUser, currentUser } from "./state";
 import { showFormError } from "./validation";
 
 export async function getMe(): Promise<User | null> {

@@ -1,16 +1,19 @@
 import {
-    showModal, closeModal, modal,
+    modal,
     openFavoriteBtn, closeModalBtn, openCartBtn, Aside, openAuthContainerBtn, openAddProductBtn, AuthContainer, logOutBtn,
     authModeSwitch, Form, addProductForm, authBtn, authHintText, authLink, authTitle, formNameContainer, AddProductContainer,
-    filters, applyFilters, SearchInput, nameInput, emailInput, passwordInput,
-    updateNavUI, setFavoriteIds,
+    SearchInput, nameInput, emailInput, passwordInput,
     openMyProductsBtn, imageInput, previewImage, previewImageContainer, titleInput, categoryInput, priceInput, uploadLabel
 
-} from "./ts/functions";
-import { clearFavoriteCheckboxes, clearFavoritesUI } from "./ts/favoriteFunctions";
+} from "./ts/dom";
 import { registerUser, loginUser, getData, addProduct, updateMyProduct } from "./ts/requests";
+
+import { clearFavoriteCheckboxes, clearFavoritesUI } from "./ts/favoriteFunctions";
+import { applyFilters } from "./ts/renderers";
+import { showModal, closeModal, updateNavUI } from "./ts/ui";
 import { clearFormError, clearInputError, validateAddProductForm, validateAuthForm } from "./ts/validation";
-import { setEditingProduct } from "./ts/productState";
+import { filters, setFavoriteIds, } from "./ts/state";
+import * as ProductState from "./ts/state";
 
 let authMode: "login" | "register" = "login"
 
@@ -173,14 +176,14 @@ Form.addEventListener('submit', async (e: SubmitEvent) => {
 addProductForm.addEventListener('submit', async (e : SubmitEvent) => {
     e.preventDefault();
 
-    const mode = (window as any).productFormMode || "create";
-    const editingId = (window as any).currentEditingProductId;
+    const mode = ProductState.productFormMode;
+    const editingId = ProductState.currentEditingProductId;
 
     const isFormValid = validateAddProductForm(
         titleInput,
         categoryInput,
         priceInput,
-        mode === "create" ? imageInput : ({} as HTMLInputElement)
+        mode === "create" ? imageInput : null
     );
 
     if (!isFormValid) return;
@@ -206,8 +209,7 @@ addProductForm.addEventListener('submit', async (e : SubmitEvent) => {
         addProductForm.reset();
         previewImage.src = '';
 
-        (window as any).productFormMode = "create";
-        (window as any).currentEditingProductId = null;
+        ProductState.setEditingProduct(null, "create");
 
         closeModal();
         await getData(true);
@@ -227,12 +229,16 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 openAddProductBtn.addEventListener('click', () => {
-    setEditingProduct(null, "create");
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showModal("auth-mode");
+        return
+    } 
+
+    ProductState.setEditingProduct(null, "create");
     
-    const addProductForm = document.getElementById('add-product-form') as HTMLFormElement;
     if (addProductForm) {
         addProductForm.reset();
-        const previewImage = document.querySelector('#preview-image') as HTMLImageElement;
         if (previewImage) previewImage.src = "";
     }
     

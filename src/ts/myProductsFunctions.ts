@@ -1,7 +1,8 @@
 import { type Card } from "./types";
 import { deleteMyProduct } from "./requests";
-import { categoryInput, descriptionTextArea, previewImage, priceInput, showModal, titleInput } from "./functions";
-import { setEditingProduct } from "./productState";
+import { categoryInput, descriptionTextArea, previewImage, previewImageContainer, priceInput, titleInput } from "./dom";
+import { setEditingProduct } from "./state";
+import { showModal } from "./ui";
 
 export let myProducts: Card[] = [];
 export const MyProductsContainer = document.querySelector("#my-products-container") as HTMLElement;
@@ -81,12 +82,12 @@ MyProductsContainer.addEventListener('click', async (e) => {
         priceInput.value = String(targetProduct.price);
         descriptionTextArea.value = targetProduct.description || "";
         previewImage.src = targetProduct.imageUrl;
+        previewImageContainer.classList.remove('hidden');
 
         setEditingProduct(productId, "edit");
 
-        const modalTitle = document.querySelector('#modal-title') as HTMLHeadElement;
+        const modalTitle = document.getElementById('add-product-title') as HTMLHeadElement;
         modalTitle.textContent = "Edit Product";
         showModal("add-product");
-        
     }
-})
+});

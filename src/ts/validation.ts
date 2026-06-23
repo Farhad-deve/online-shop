@@ -74,7 +74,7 @@ export function validateAddProductForm(
     titleInput : HTMLInputElement,
     categoryInput : HTMLInputElement,
     priceInput : HTMLInputElement,
-    imageInput : HTMLInputElement
+    imageInput : HTMLInputElement | null
 ) : boolean {
     let isValid = true;
 
@@ -94,7 +94,7 @@ export function validateAddProductForm(
         isValid = false;
     }
 
-    if (!imageInput.files || imageInput.files.length === 0) {
+    if (imageInput && (!imageInput.files || imageInput.files.length === 0)) {
         const uploadLabel = document.querySelector('label[for="imageInput"]')
         if (uploadLabel) uploadLabel.classList.add('bg-light-red', 'border-1', 'border-red')
         isValid = false;

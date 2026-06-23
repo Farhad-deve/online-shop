@@ -1,5 +1,6 @@
 import { type FavoriteCard } from "./types";
-import { currentUser, favoriteIds, setFavoriteIds, showModal } from "./functions";
+import { currentUser, favoriteIds, setFavoriteIds } from "./state";
+import { showModal } from "./ui";
 import { addToFavorites, getFavorites, removeFromFavorites } from "./requests";
 
 export const CardsContainer = document.querySelector("#cards-container") as HTMLElement;

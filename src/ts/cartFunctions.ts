@@ -1,6 +1,7 @@
-import { currentUser, showModal } from "./functions";
+import { currentUser } from "./state";
+import { showModal } from "./ui";
 import { addToCart, clearCart, getCarts, removeFromCart, setCartQty } from "./requests";
-import { type CartProduct, type CartItem } from "./types";
+import { type CartItem } from "./types";
 
 let cartItems: CartItem[] = [];
 const CartContainer = document.querySelector("#cart-container") as HTMLElement;
